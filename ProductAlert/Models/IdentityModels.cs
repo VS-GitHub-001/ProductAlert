@@ -39,6 +39,6 @@ namespace ProductAlert.Models
             return new ApplicationDbContext();
         }
 
-        public System.Data.Entity.DbSet<ProductAlert.Models.ApplicationUser> ApplicationUsers { get; set; }
+        //public System.Data.Entity.DbSet<ProductAlert.Models.ApplicationUser> ApplicationUsers { get; set; }
     }
 }

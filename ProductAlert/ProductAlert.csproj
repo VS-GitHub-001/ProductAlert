@@ -195,6 +195,10 @@
     <Compile Include="Migrations\202212101345397_initln.Designer.cs">
       <DependentUpon>202212101345397_initln.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202212120938356_kjo.cs" />
+    <Compile Include="Migrations\202212120938356_kjo.Designer.cs">
+      <DependentUpon>202212120938356_kjo.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Agency.cs" />
@@ -387,6 +391,7 @@
     <Content Include="Views\Users\Details.cshtml" />
     <Content Include="Views\Users\Create.cshtml" />
     <Content Include="Views\Users\Edit.cshtml" />
+    <Content Include="Views\Users\AddtoBatch.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -415,6 +420,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202212101345397_initln.resx">
       <DependentUpon>202212101345397_initln.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202212120938356_kjo.resx">
+      <DependentUpon>202212120938356_kjo.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

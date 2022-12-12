@@ -1,4 +1,5 @@
-﻿using ProductAlert.Models;
+﻿using Microsoft.AspNet.Identity.Owin;
+using ProductAlert.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -13,7 +14,42 @@ namespace ProductAlert.Controllers
     public class UsersController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
+        private ApplicationSignInManager _signInManager;
+        private ApplicationUserManager _userManager;
 
+        public UsersController()
+        {
+        }
+
+        public UsersController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
+        {
+            UserManager = userManager;
+            SignInManager = signInManager;
+        }
+
+        public ApplicationSignInManager SignInManager
+        {
+            get
+            {
+                return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
+            }
+            private set
+            {
+                _signInManager = value;
+            }
+        }
+
+        public ApplicationUserManager UserManager
+        {
+            get
+            {
+                return _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
+            }
+            private set
+            {
+                _userManager = value;
+            }
+        }
         // GET: Users
         public async Task<ActionResult> Index()
         {
@@ -35,7 +71,7 @@ namespace ProductAlert.Controllers
             }
             return View(applicationUser);
         }
-
+        
         // GET: Adminpanel/Clients/Create
         public ActionResult Create()
         {
@@ -49,16 +85,46 @@ namespace ProductAlert.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(ApplicationUser applicationUser)
         {
-            if (ModelState.IsValid)
-            {
-                db.Users.Add(applicationUser);
-                await db.SaveChangesAsync();
-                return RedirectToAction("Index");
-            }
+            
+                var user = new ApplicationUser { UserName = applicationUser.Email, Email = applicationUser.Email, Fullname = applicationUser.Fullname, PhoneNumber = applicationUser.PhoneNumber };
+                var result = await UserManager.CreateAsync(user, "Admin@123");
+                if (result.Succeeded)
+                {
+
+
+                    return RedirectToAction("Index");
+                }
+            
 
             return View(applicationUser);
         }
+        public ActionResult AddtoBatch(string uid)
+        {
+            ViewBag.ProductId = new SelectList(db.Products, "Id", "ProductName");
+            ViewBag.BatchAlertId = new SelectList(db.BatchAlert, "Id", "Batch");
 
+            ViewBag.id = uid;
+            ViewBag.name = db.Users.FirstOrDefault(x => x.Id == uid).Fullname;
+            return View();
+        }
+
+        // POST: Adminpanel/Clients/Create
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> AddtoBatch(ProductNotify applicationUser)
+        {
+            if (ModelState.IsValid)
+            {
+                db.ProductNotifies.Add(applicationUser);
+                await db.SaveChangesAsync();
+                return RedirectToAction("Index");
+            }
+            ViewBag.ProductId = new SelectList(db.Products, "Id", "ProductName");
+            ViewBag.BatchAlertId = new SelectList(db.BatchAlert, "Id", "Batch");
+            return View(applicationUser);
+        }
         // GET: Adminpanel/Clients/Edit/5
         public async Task<ActionResult> Edit(string id)
         {

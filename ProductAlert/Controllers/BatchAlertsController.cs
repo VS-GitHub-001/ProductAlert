@@ -8,6 +8,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using ProductAlert.Models;
+using System.IO;
 
 namespace ProductAlert.Controllers
 {
@@ -18,9 +19,58 @@ namespace ProductAlert.Controllers
         // GET: BatchAlerts
         public async Task<ActionResult> Index()
         {
-            return View(await db.BatchAlert.ToListAsync());
+            return View(await db.BatchAlert.Include(x=>x.ProductNotifies).ToListAsync());
         }
+        public async Task<ActionResult> Send(int id)
+        {
+            string numberss = "";
+            var datas = db.ProductNotifies.Include(x=>x.User).Include(x => x.Product).Where(x => x.BatchAlertId == id).ToList();
+             numberss = numberss + ","+ string.Join(",", datas.Select(x => x.User.PhoneNumber).Select(n => n.ToString()).ToArray());
+                foreach(var sd in datas)
+            {
+                var agencyy = db.Agencies.Where(x => x.Id == sd.Product.AgencyId).Select(x => x.ContactPhone).ToList();
+                 numberss = numberss + "," + string.Join(",", agencyy.Select(n => n.ToString()).ToArray());
+            }
+            foreach (var sd in datas)
+            {
+                var manuf = db.Manufacturer.Where(x => x.Id == sd.Product.ManufacturerId).Select(x => x.ContactPhone).ToList();
+                numberss = numberss + "," + string.Join(",", manuf.Select(n => n.ToString()).ToArray());
+            }
+            string message = "PRODUCT ALERT MANAGEMENT SYSTEM TEST FOR EXPIRED PRODUCTS COMPUTER SCIENCE PROJECT. TESTING";
+            message = message.Replace("0", "O");
+            message = message.Replace("Services", "Servics");
+            message = message.Replace("gmail", "g -mail");
+            string response = "";
+            //Peter Ahioma
 
+            try
+            {
+                var getApi = "http://account.kudisms.net/api/?username=ponwuka123@gmail.com&password=sms@123&message=@@message@@&sender=@@sender@@&mobiles=@@recipient@@";
+                string apiSending = getApi.Replace("@@sender@@", "EBUKA").Replace("@@recipient@@", HttpUtility.UrlEncode(numberss)).Replace("@@message@@", HttpUtility.UrlEncode(message));
+
+                HttpWebRequest httpWebRequest = (HttpWebRequest)WebRequest.Create(apiSending);
+                httpWebRequest.Method = "GET";
+                httpWebRequest.ContentType = "application/json";
+
+                //getting the respounce from the request
+                HttpWebResponse httpWebResponse = (HttpWebResponse)await httpWebRequest.GetResponseAsync();
+                Stream responseStream = httpWebResponse.GetResponseStream();
+                StreamReader streamReader = new StreamReader(responseStream);
+                response = await streamReader.ReadToEndAsync();
+                //response = "OK";
+            }
+            catch (Exception c)
+            {
+                response = c.ToString();
+            }
+
+            if (response.ToUpper().Contains("OK") || response.ToUpper().Contains("1701"))
+            {
+                //return response = "OK Sent";
+            }
+            TempData["r"] = "Alert Sent";
+            return RedirectToAction("Index");
+        }
         // GET: BatchAlerts/Details/5
         public async Task<ActionResult> Details(int? id)
         {
@@ -47,7 +97,7 @@ namespace ProductAlert.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "Id")] BatchAlert batchAlert)
+        public async Task<ActionResult> Create(BatchAlert batchAlert)
         {
             if (ModelState.IsValid)
             {
@@ -79,7 +129,7 @@ namespace ProductAlert.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "Id")] BatchAlert batchAlert)
+        public async Task<ActionResult> Edit(BatchAlert batchAlert)
         {
             if (ModelState.IsValid)
             {
