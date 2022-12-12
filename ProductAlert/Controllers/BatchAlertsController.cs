@@ -28,12 +28,12 @@ namespace ProductAlert.Controllers
              numberss = numberss + ","+ string.Join(",", datas.Select(x => x.User.PhoneNumber).Select(n => n.ToString()).ToArray());
                 foreach(var sd in datas)
             {
-                var agencyy = db.Agencies.Where(x => x.Id == sd.Product.AgencyId).Select(x => x.ContactPhone).ToList();
+                var agencyy = db.Agencies.Select(x => x.ContactPhone).ToList();
                  numberss = numberss + "," + string.Join(",", agencyy.Select(n => n.ToString()).ToArray());
             }
             foreach (var sd in datas)
             {
-                var manuf = db.Manufacturer.Where(x => x.Id == sd.Product.ManufacturerId).Select(x => x.ContactPhone).ToList();
+                var manuf = db.Manufacturer.Select(x => x.ContactPhone).ToList();
                 numberss = numberss + "," + string.Join(",", manuf.Select(n => n.ToString()).ToArray());
             }
             string message = "PRODUCT ALERT MANAGEMENT SYSTEM TEST FOR EXPIRED PRODUCTS COMPUTER SCIENCE PROJECT. TESTING";
