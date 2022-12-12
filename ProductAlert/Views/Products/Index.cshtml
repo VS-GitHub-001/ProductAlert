@@ -1,0 +1,65 @@
+﻿@model IEnumerable<ProductAlert.Models.Product>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<div class="table-responsive dataview">
+
+    <table class="table">
+        <tr>
+            <th>
+                Product Name
+            </th>
+
+
+            <th>
+                Manufacturer Date
+
+            </th>
+            <th>
+                Expiring Date
+            </th>
+            <th>
+                Batch Number
+            </th>
+            <th>
+                Image
+            </th>
+            <th>Action</th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProductName)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.ManufacturerDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ExpiringDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BatchNumber)
+                </td>
+                <td>
+
+                    <img src="~/Uploads/@item.Img" style="max-height:60px;" />
+                </td>
+                <td>
+                    @Html.ActionLink("Add to Alert", "AddTo", new { id = item.Id })
+
+                </td>
+            </tr>
+        }
+
+    </table>
+</div>
