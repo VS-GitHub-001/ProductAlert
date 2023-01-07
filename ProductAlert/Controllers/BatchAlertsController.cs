@@ -21,6 +21,56 @@ namespace ProductAlert.Controllers
         {
             return View(await db.BatchAlert.Include(x=>x.ProductNotifies).ToListAsync());
         }
+
+        public async Task<ActionResult> SendAll(int id)
+        {
+            string numberss = "";
+            var datas = db.ProductNotifies.Include(x => x.User).Include(x => x.Product).ToList();
+            numberss = numberss + "," + string.Join(",", datas.Select(x => x.User.PhoneNumber).Select(n => n.ToString()).ToArray());
+           
+
+                var agencyy = db.Agencies.Select(x => x.ContactPhone).ToList();
+                numberss = numberss + "," + string.Join(",", agencyy.Select(n => n.ToString()).ToArray());
+          
+                var manuf = db.Manufacturer.Select(x => x.ContactPhone).ToList();
+                numberss = numberss + "," + string.Join(",", manuf.Select(n => n.ToString()).ToArray());
+            
+            string message = "PRODUCT ALERT MANAGEMENT SYSTEM \r\n EXPIRED PRODUCTS ALERT BY ONWUKA EBUKA IN COMPUTER SCIENCE.";
+            message = message.Replace("0", "O");
+            message = message.Replace("Services", "Servics");
+            message = message.Replace("gmail", "g -mail");
+            string response = "";
+            //Peter Ahioma
+
+            try
+            {
+                var getApi = "http://account.kudisms.net/api/?username=ponwuka123@gmail.com&password=sms@123&message=@@message@@&sender=@@sender@@&mobiles=@@recipient@@";
+                string apiSending = getApi.Replace("@@sender@@", "EBUKA").Replace("@@recipient@@", HttpUtility.UrlEncode(numberss)).Replace("@@message@@", HttpUtility.UrlEncode(message));
+
+                HttpWebRequest httpWebRequest = (HttpWebRequest)WebRequest.Create(apiSending);
+                httpWebRequest.Method = "GET";
+                httpWebRequest.ContentType = "application/json";
+
+                //getting the respounce from the request
+                HttpWebResponse httpWebResponse = (HttpWebResponse)await httpWebRequest.GetResponseAsync();
+                Stream responseStream = httpWebResponse.GetResponseStream();
+                StreamReader streamReader = new StreamReader(responseStream);
+                response = await streamReader.ReadToEndAsync();
+                //response = "OK";
+            }
+            catch (Exception c)
+            {
+                response = c.ToString();
+            }
+
+            if (response.ToUpper().Contains("OK") || response.ToUpper().Contains("1701"))
+            {
+                //return response = "OK Sent";
+            }
+            TempData["r"] = "Alert Sent";
+            return RedirectToAction("Index");
+        }
+
         public async Task<ActionResult> Send(int id)
         {
             string numberss = "";
@@ -36,7 +86,7 @@ namespace ProductAlert.Controllers
                 var manuf = db.Manufacturer.Select(x => x.ContactPhone).ToList();
                 numberss = numberss + "," + string.Join(",", manuf.Select(n => n.ToString()).ToArray());
             }
-            string message = "PRODUCT ALERT MANAGEMENT SYSTEM TEST FOR EXPIRED PRODUCTS COMPUTER SCIENCE PROJECT. TESTING";
+            string message = "PRODUCT  ALERT MANAGEMENT SYSTEM \r\n EXPIRED PRODUCTS ALERT BY ONWUKA EBUKA IN COMPUTER SCIENCE.";
             message = message.Replace("0", "O");
             message = message.Replace("Services", "Servics");
             message = message.Replace("gmail", "g -mail");
