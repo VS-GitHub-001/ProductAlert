@@ -5,12 +5,16 @@
 }
 
 <h2>BATCH ALERT NOTIFICATION</h2>
-@if(TempData["r"] != null)
-            {
-                <h1>@TempData["r"]</h1>
-            }
+
+@if (TempData["r"] != null)
+{
+    <h1>@TempData["r"]</h1>
+}
 <p>
-    @Html.ActionLink("Create New", "Create")
+    @Html.ActionLink("Create New", "Create", null, new { @class = "btn btn-primary" })
+
+    @Html.ActionLink("Send Alert All", "SendAll", null, new { @class = "btn btn-danger" })
+
 </p>
 <table class="table">
     <tr>
@@ -19,21 +23,22 @@
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
-<tr>
-    <td>
-        @Html.DisplayFor(modelItem => item.Batch)
-    </td>
-    <td>
-        @item.ProductNotifies.Count()
-    </td>
-    <td>
-        @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-        @Html.ActionLink("Details", "Details", new { id = item.Id }) |
-        @Html.ActionLink("Delete", "Delete", new { id = item.Id }) |
-        @Html.ActionLink("Send Alert", "Send", new { id = item.Id })
-    </td>
-</tr>
-}
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Batch)
+            </td>
+            <td>
+                @item.ProductNotifies.Count()
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.Id }) |
+
+            </td>
+        </tr>
+    }
 
 </table>
